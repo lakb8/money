@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DRM Protected Video Playback with Shaka Player</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/3.0.10/shaka-player.compiled.js"></script>
+</head>
+<body>
+
+    <h1>DRM Protected Video Playback with Shaka Player</h1>
+    <video id="video" width="640" controls></video>
+
+    <script>
+        // 设置视频链接
+        var manifestUri = 'https://d2csysphmmv5hu.cloudfront.net/462f7f51-68d6-4509-a8df-782b3f03b3b0/stream_vod_1.mpd';
+
+        // 检查 Shaka Player 是否被支持
+        shaka.polyfill.installAll();
+        if (shaka.Player.isBrowserSupported()) {
+            // 获取视频元素
+            var video = document.getElementById('video');
+            // 创建 Shaka Player 实例
+            var player = new shaka.Player(video);
+
+            // 配置 DRM
+            player.configure({
+                drm: {
+                    servers: {
+                        'com.widevine.alpha': 'https://widevine-dash.ezdrm.com/widevine-php/widevine-foreignkey.php?pX=FC68E4' // Widevine DRM 许可证链接
+                    }
+                }
+            });
+
+            // 加载并播放视频
+            player.load(manifestUri).then(function() {
+                console.log('The video has now been loaded!');
+            }).catch(function(error) {
+                console.error('Error code', error.code, 'object', error);
+            });
+        } else {
+            console.error('Browser not supported!');
+        }
+    </script>
+
+</body>
+</html>
